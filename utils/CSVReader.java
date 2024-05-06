@@ -15,12 +15,13 @@ public class CSVReader {
     public CSVReader() {
     }
 
-    public HashMap<String, Tarea> readTasks(String taskPath) {
+    public HashMap<String, Tarea> readTasks(String taskPath) { // O(n) * 2
 
         // Obtengo una lista con las lineas del archivo
         // lines.get(0) tiene la primer linea del archivo
         // lines.get(1) tiene la segunda linea del archivo... y así
-        ArrayList<String[]> lines = this.readContent(taskPath);
+
+        ArrayList<String[]> lines = this.readContent(taskPath); // O(n)
         HashMap<String, Tarea> tareas = new HashMap<>();
 
         for (String[] line : lines) {
@@ -42,12 +43,12 @@ public class CSVReader {
 
     }
 
-    public void readProcessors(String processorPath) {
+    public void readProcessors(String processorPath) {// O(n) * 2
 
         // Obtengo una lista con las lineas del archivo
         // lines.get(0) tiene la primer linea del archivo
         // lines.get(1) tiene la segunda linea del archivo... y así
-        ArrayList<String[]> lines = this.readContent(processorPath);
+        ArrayList<String[]> lines = this.readContent(processorPath); // O(n)
 
         for (String[] line : lines) {
             // Cada linea es un arreglo de Strings, donde cada posicion guarda un elemento

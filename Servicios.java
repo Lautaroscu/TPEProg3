@@ -21,7 +21,10 @@ public class Servicios {
      * Expresar la complejidad temporal del constructor.
      */
     // Complejidad Temporal del Constructor :
-    // O(n) al cuadrado * 2
+    // O(n) PD : aca nose si deberia haber sumando readProcesesor + readTask son
+    // ambos O(n) ,no
+    // recurdo si se suman los O(n) o se puede simplificar en un O(n)
+
     public Servicios(String pathProcesadores, String pathTareas) {
         CSVReader reader = new CSVReader();
         reader.readProcessors(pathProcesadores);
