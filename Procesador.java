@@ -1,4 +1,4 @@
-package TPE;
+package TPEProg3;
 
 public class Procesador {
     private String idProcesador, codigoProcesador;

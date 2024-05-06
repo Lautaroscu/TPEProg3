@@ -1,11 +1,11 @@
-package TPE;
+package TPEProg3;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import TPE.utils.CSVReader;
+import TPEProg3.utils.CSVReader;
 
 public class Servicios {
 
