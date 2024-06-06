@@ -1,5 +1,6 @@
 package TPEProg3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,8 +9,14 @@ import java.util.stream.Stream;
 import TPEProg3.utils.CSVReader;
 
 public class Servicios {
+    private HashMap<String, Tarea> tareas = new HashMap<>();
+    private ArrayList<Tarea> tareasCriticas = new ArrayList<>();
+    private ArrayList<Tarea> tareasNoCriticas = new ArrayList<>();
+    private int tiempoMenor = Integer.MAX_VALUE;
+    private int estados;
 
-    private HashMap<String, Tarea> tareas;
+    private List<Procesador> procesadores = new ArrayList<>();
+    private List<Procesador> solucionFinalProcesadores = new ArrayList<>();
 
     /**
      * NO modificar la interfaz de esta clase ni sus métodos públicos.
@@ -27,8 +34,9 @@ public class Servicios {
 
     public Servicios(String pathProcesadores, String pathTareas) {
         CSVReader reader = new CSVReader();
-        reader.readProcessors(pathProcesadores);
-        tareas = reader.readTasks(pathTareas);
+
+        reader.readProcessors(pathProcesadores, procesadores);
+        reader.readTasks(pathTareas, tareas, tareasCriticas, tareasNoCriticas); // llena las estructuras
     }
 
     /*
@@ -44,13 +52,13 @@ public class Servicios {
      * Expresar la complejidad temporal del servicio 2.
      */
     // Complejidad Temporal :
-    // O(n)
+    // O(1)
     public List<Tarea> servicio2(boolean esCritica) {
 
-        return tareas.values()
-                .stream()
-                .filter(tarea -> tarea.getEsCritica().equals(esCritica))
-                .collect(Collectors.toList());
+        if (esCritica)
+            return tareasCriticas;
+
+        return tareasNoCriticas;
 
     }
 
@@ -62,7 +70,8 @@ public class Servicios {
     public List<Tarea> servicio3(int prioridadInferior, int prioridadSuperior) {
         final int PRIORIDAD_MIN = 0, PRIORIDAD_MAX = 100;
 
-        if (prioridadInferior < PRIORIDAD_MIN || prioridadSuperior > PRIORIDAD_MAX) {
+        if ((prioridadInferior > PRIORIDAD_MAX || prioridadInferior < PRIORIDAD_MIN)
+                || prioridadSuperior < PRIORIDAD_MIN || prioridadSuperior > PRIORIDAD_MAX) {
             throw new IllegalArgumentException(
                     "La prioridad inferior debe ser mayor o igual a " + PRIORIDAD_MIN + " \n" +
                             " y la prioridad superior debe ser menor o igual a" + PRIORIDAD_MAX);
@@ -75,4 +84,81 @@ public class Servicios {
                 .collect(Collectors.toList());
     }
 
+    private int getTiempoMenor(int tiempo) {
+        ArrayList<Tarea> tareasList = new ArrayList<Tarea>(this.tareas.values());
+        ArrayList<Tarea> verTareas = new ArrayList<>();
+
+        for (Procesador p : procesadores) {
+            buscarTiempoMenor(p, tareasList.get(0), tareasList, 0, verTareas, tiempo);
+
+        }
+        return this.tiempoMenor;
+
+    }
+
+    private void buscarTiempoMenor(Procesador p, Tarea tarea, ArrayList<Tarea> tareas, int index,
+            ArrayList<Tarea> verTareas, int tiempo) {
+        if (!p.asignarTarea(tarea, tiempo)) {
+            return;
+        }
+
+        verTareas.add(tarea);
+
+        if (getTiempoMayorProcesador() > this.tiempoMenor) {
+            verTareas.remove(verTareas.size() - 1);
+            p.eliminarTarea(p.getTareasAsignadas().size() - 1);
+
+            return;
+        }
+        System.out.println(verTareas);
+
+        if (index < tareas.size() - 1) {
+            Tarea t = tareas.get(index + 1);
+
+            for (Procesador pr : procesadores) {
+                buscarTiempoMenor(pr, t, tareas, index + 1, verTareas, tiempo);
+            }
+        }
+        estados++;
+
+        if (verTareas.size() == tareas.size())
+
+        {
+            if (this.tiempoMenor > getTiempoMayorProcesador()) {
+                this.tiempoMenor = getTiempoMayorProcesador();
+                this.solucionFinalProcesadores.clear();
+                guardarSolucion();
+
+            }
+        }
+
+        verTareas.remove(verTareas.size() - 1);
+        p.eliminarTarea(p.getTareasAsignadas().size() - 1);
+
+    }
+
+    private int getTiempoMayorProcesador() {
+        int sumaMayor = 0;
+
+        for (int i = 0; i < procesadores.size(); i++) {
+            int suma = procesadores.get(i).getSumaTiempos();
+            if (suma > sumaMayor) {
+                sumaMayor = suma;
+            }
+        }
+        return sumaMayor;
+    }
+
+    public Solucion asignarTareas(int tiempo) {
+        int tiempoMaximo = this.getTiempoMenor(tiempo);
+        Solucion solucion = new Solucion(solucionFinalProcesadores, tiempoMaximo, this.estados);
+
+        return solucion;
+    }
+
+    private void guardarSolucion() {
+        for (Procesador p : procesadores) {
+            solucionFinalProcesadores.add(p.getCopia());
+        }
+    }
 }

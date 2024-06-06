@@ -7,22 +7,25 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import TPEProg3.Procesador;
 import TPEProg3.Tarea;
 
 public class CSVReader {
 
     public CSVReader() {
+
     }
 
-    public HashMap<String, Tarea> readTasks(String taskPath) { // O(n) * 2
+    public void readTasks(String taskPath, HashMap<String, Tarea> tareas, ArrayList<Tarea> tareasCriticas,
+            ArrayList<Tarea> tareasNoCriticas) { // O(n) * 2
 
         // Obtengo una lista con las lineas del archivo
         // lines.get(0) tiene la primer linea del archivo
         // lines.get(1) tiene la segunda linea del archivo... y así
 
         ArrayList<String[]> lines = this.readContent(taskPath); // O(n)
-        HashMap<String, Tarea> tareas = new HashMap<>();
 
         for (String[] line : lines) {
             // Cada linea es un arreglo de Strings, donde cada posicion guarda un elemento
@@ -33,17 +36,21 @@ public class CSVReader {
             Integer prioridad = Integer.parseInt(line[4].trim());
             // Aca instanciar lo que necesiten en base a los datos leidos
 
+            Tarea nuevaTarea = new Tarea(id, nombre, tiempo, prioridad, critica);
+
             if (!tareas.containsKey(id)) {
-                Tarea nuevaTarea = new Tarea(id, nombre, tiempo, prioridad, critica);
                 tareas.put(id, nuevaTarea);
             }
+            if (nuevaTarea.getEsCritica())
+                tareasCriticas.add(nuevaTarea);
+            else
+                tareasNoCriticas.add(nuevaTarea);
 
         }
-        return tareas;
 
     }
 
-    public void readProcessors(String processorPath) {// O(n) * 2
+    public void readProcessors(String processorPath, List<Procesador> procesadors) {// O(n)
 
         // Obtengo una lista con las lineas del archivo
         // lines.get(0) tiene la primer linea del archivo
@@ -57,6 +64,9 @@ public class CSVReader {
             Boolean refrigerado = Boolean.parseBoolean(line[2].trim());
             Integer anio = Integer.parseInt(line[3].trim());
             // Aca instanciar lo que necesiten en base a los datos leidos
+            Procesador p = new Procesador(id, codigo, refrigerado, anio);
+
+            procesadors.add(p);
         }
 
     }

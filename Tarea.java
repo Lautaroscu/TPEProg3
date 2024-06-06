@@ -58,10 +58,26 @@ public class Tarea {
         this.tareaCritica = esCritica;
     }
 
+    // public String toString() {
+    // String critica = tareaCritica ? "SI" : "NO";
+    // return "Tarea{" + "Nombre: " + this.getNombreTarea() + ", Tiempo de
+    // Ejecución: " + this.getTiempoEjecucion()
+    // + ", Es critica :" + critica + " nivel de prioridad " + nivelDePrioridad;
+    // }
     @Override
     public String toString() {
-        String critica = tareaCritica ? "SI" : "NO";
-        return "Tarea{" + "Nombre: " + this.getNombreTarea() + ", Tiempo de Ejecución: " + this.getTiempoEjecucion()
-                + ", Es critica :" + critica + " nivel de prioridad " + nivelDePrioridad;
+        // TODO Auto-generated method stub
+        return this.nombreTarea + " " + this.tiempoEjecucion;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        try {
+            Tarea tarea = (Tarea) obj;
+            return this.getNombreTarea().equals(tarea.getNombreTarea());
+        } catch (Exception e) {
+            return false;
+
+        }
     }
 }
