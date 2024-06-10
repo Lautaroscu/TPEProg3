@@ -1,4 +1,4 @@
-package TPEProg3;
+package TPEProg3.src;
 
 import java.util.ArrayList;
 import java.util.List;

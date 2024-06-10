@@ -1,16 +1,12 @@
-package TPEProg3;
+package TPEProg3.src;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import TPEProg3.soluciones.Solucion;
-import TPEProg3.soluciones.SolucionBacktracking;
-import TPEProg3.soluciones.SolucionGreedy;
-import TPEProg3.utils.CSVReader;
+import java.util.HashMap;
+import src.soluciones.Solucion;
+import src.soluciones.SolucionBacktracking;
+import src.soluciones.SolucionGreedy;
+import TPEProg3.src.utils.CSVReader;
 
 public class Servicios {
     private HashMap<String, Tarea> tareas = new HashMap<>();

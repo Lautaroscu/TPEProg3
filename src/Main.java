@@ -1,8 +1,8 @@
-package TPEProg3;
+package TPEProg3.src;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Servicios s1 = new Servicios("./TPEProg3/datasets/Procesadores.csv", "./TPEProg3/datasets/Tareas.csv");
+        Servicios s1 = new Servicios("./src/datasets/Procesadores.csv", "./src/datasets/Tareas.csv");
         System.out.println(s1.asignarTareasBacktracking(65));
     }
 }

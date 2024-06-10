@@ -1,5 +1,4 @@
-
-package TPEProg3.utils;
+package TPEProg3.src.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,8 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import TPEProg3.Procesador;
-import TPEProg3.Tarea;
+import TPEProg3.src.Tarea;
+import TPEProg3.src.Procesador;
 
 public class CSVReader {
 

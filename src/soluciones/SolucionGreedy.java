@@ -1,8 +1,8 @@
-package TPEProg3.soluciones;
+package src.soluciones;
 
 import java.util.List;
 
-import TPEProg3.Procesador;
+import TPEProg3.src.Procesador;
 
 public final class SolucionGreedy extends Solucion {
     private int candidatos;

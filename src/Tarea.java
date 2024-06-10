@@ -1,4 +1,4 @@
-package TPEProg3;
+package TPEProg3.src;
 
 public class Tarea implements Comparable<Tarea> {
     private String idTarea, nombreTarea;
