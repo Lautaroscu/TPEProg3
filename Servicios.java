@@ -1,11 +1,15 @@
 package TPEProg3;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import TPEProg3.soluciones.Solucion;
+import TPEProg3.soluciones.SolucionBacktracking;
+import TPEProg3.soluciones.SolucionGreedy;
 import TPEProg3.utils.CSVReader;
 
 public class Servicios {
@@ -17,6 +21,7 @@ public class Servicios {
 
     private List<Procesador> procesadores = new ArrayList<>();
     private List<Procesador> solucionFinalProcesadores = new ArrayList<>();
+    private ArrayList<Tarea> tareasList;
 
     /**
      * NO modificar la interfaz de esta clase ni sus métodos públicos.
@@ -37,6 +42,8 @@ public class Servicios {
 
         reader.readProcessors(pathProcesadores, procesadores);
         reader.readTasks(pathTareas, tareas, tareasCriticas, tareasNoCriticas); // llena las estructuras
+        tareasList = new ArrayList<Tarea>(this.tareas.values());
+
     }
 
     /*
@@ -84,44 +91,54 @@ public class Servicios {
                 .collect(Collectors.toList());
     }
 
-    private int getTiempoMenor(int tiempo) {
-        ArrayList<Tarea> tareasList = new ArrayList<Tarea>(this.tareas.values());
+    /*
+     * Por cada procesador recorremos todas las tareas (de forma recursiva) donde a
+     * la primer tarea del arreglo siempre se la asignamos al propio proceador.
+     * Vamos probando todas las combinaciones posibles, y en donde tenemos un estado
+     * (todas las tareas asignadas) evaluamos si es el tiempo mayor de los
+     * proceadores
+     * en ese estado es menor al tiempoMenor guardado en una variable.
+     * En cada asignacion de la tarea, para minimizar la cantidad de estados
+     * realizamos una "poda" comparando si asignando la tarea a ese procesador el
+     * tiempo es mayor al tiempo menor guardado hasta
+     * el momento.
+     */
+
+    private int getTiempoMenorBacktracking(int tiempo) {
         ArrayList<Tarea> verTareas = new ArrayList<>();
 
         for (Procesador p : procesadores) {
-            buscarTiempoMenor(p, tareasList.get(0), tareasList, 0, verTareas, tiempo);
+            buscarTiempoMenorBackTracking(p, tareasList.get(0), tareasList, 0, verTareas, tiempo);
 
         }
         return this.tiempoMenor;
 
     }
 
-    private void buscarTiempoMenor(Procesador p, Tarea tarea, ArrayList<Tarea> tareas, int index,
-            ArrayList<Tarea> verTareas, int tiempo) {
+    private void buscarTiempoMenorBackTracking(Procesador p, Tarea tarea, ArrayList<Tarea> tareas, int index,
+            ArrayList<Tarea> tareasAsignadas, int tiempo) {
         if (!p.asignarTarea(tarea, tiempo)) {
             return;
         }
-
-        verTareas.add(tarea);
+        estados++;
+        tareasAsignadas.add(tarea);
 
         if (getTiempoMayorProcesador() > this.tiempoMenor) {
-            verTareas.remove(verTareas.size() - 1);
+            tareasAsignadas.remove(tareasAsignadas.size() - 1);
             p.eliminarTarea(p.getTareasAsignadas().size() - 1);
 
             return;
         }
-        System.out.println(verTareas);
 
         if (index < tareas.size() - 1) {
             Tarea t = tareas.get(index + 1);
 
             for (Procesador pr : procesadores) {
-                buscarTiempoMenor(pr, t, tareas, index + 1, verTareas, tiempo);
+                buscarTiempoMenorBackTracking(pr, t, tareas, index + 1, tareasAsignadas, tiempo);
             }
         }
-        estados++;
 
-        if (verTareas.size() == tareas.size())
+        if (tareasAsignadas.size() == tareas.size())
 
         {
             if (this.tiempoMenor > getTiempoMayorProcesador()) {
@@ -132,7 +149,7 @@ public class Servicios {
             }
         }
 
-        verTareas.remove(verTareas.size() - 1);
+        tareasAsignadas.remove(tareasAsignadas.size() - 1);
         p.eliminarTarea(p.getTareasAsignadas().size() - 1);
 
     }
@@ -149,11 +166,52 @@ public class Servicios {
         return sumaMayor;
     }
 
-    public Solucion asignarTareas(int tiempo) {
-        int tiempoMaximo = this.getTiempoMenor(tiempo);
-        Solucion solucion = new Solucion(solucionFinalProcesadores, tiempoMaximo, this.estados);
+    public Solucion asignarTareasBacktracking(int tiempo) {
+        int tiempoMaximo = this.getTiempoMenorBacktracking(tiempo);
 
-        return solucion;
+        return new SolucionBacktracking(solucionFinalProcesadores, tiempoMaximo, this.estados);
+    }
+
+    public Solucion asignarTareasGreedy(int tiempo) {
+        Collections.sort(tareasList);
+
+        // candidatos en vez de tiempo
+        return new SolucionGreedy(procesadores, getTiempoMenorGreedy(tiempo),
+                // por cada tarea, tiene como candidato todos los procesadores, ya que,
+                // ordenamos los procesadores por cada asignacion de tarea
+                // para poder mejorar la busqueda del "mejor procesador" en ese momento.
+                this.procesadores.size() * this.tareasList.size());
+    }
+
+    /*
+     * Nuestra estrategia de resolucion consiste en primero recorrer las tarea, y
+     * por cada una la voy agregando al procesador con menor tiempo de ejecucion
+     * (por cada asignacion de una tarea a un procesador , ordenamos el arreglo de
+     * procesadores por tiempo ASC),
+     * al principio van a asignarse las tareas a los procesadores vacios que a su
+     * vez se iran ordenando automaticamente. Si todas las tareas fueron asignadas
+     * teniendo en cuenta las resticciones mostramos los procesadores.
+     * Y si no, el metodo devuelve -1 , es decir, al menos una tarea no pudo ser
+     * asignada a ningun procesador
+     * 
+     */
+
+    public int getTiempoMenorGreedy(int tiempo) {
+        // [30 , 25 , 20 , 12]
+
+        for (Tarea t : tareasList) {
+            int i = 0;
+            while (i < procesadores.size() && !procesadores.get(i).asignarTarea(t, tiempo)) {
+                i++;
+            }
+            if (i == procesadores.size()) {
+                return -1;
+            }
+
+            Collections.sort(procesadores);
+
+        }
+        return getTiempoMayorProcesador();
     }
 
     private void guardarSolucion() {
@@ -161,4 +219,5 @@ public class Servicios {
             solucionFinalProcesadores.add(p.getCopia());
         }
     }
+
 }

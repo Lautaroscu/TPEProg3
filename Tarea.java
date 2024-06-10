@@ -1,6 +1,6 @@
 package TPEProg3;
 
-public class Tarea {
+public class Tarea implements Comparable<Tarea> {
     private String idTarea, nombreTarea;
     private Integer tiempoEjecucion, nivelDePrioridad;
     private Boolean tareaCritica;
@@ -79,5 +79,10 @@ public class Tarea {
             return false;
 
         }
+    }
+
+    @Override
+    public int compareTo(Tarea o) {
+        return Integer.compare(o.getTiempoEjecucion(), this.getTiempoEjecucion());
     }
 }

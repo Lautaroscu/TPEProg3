@@ -3,7 +3,7 @@ package TPEProg3;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Procesador {
+public class Procesador implements Comparable<Procesador> {
     private String idProcesador, codigoProcesador;
     private Boolean estaRefrigerado;
     private Integer anioFuncionamiento;
@@ -153,5 +153,10 @@ public class Procesador {
                 this.anioFuncionamiento);
         copia.tareasAsignadas.addAll(tareasAsignadas);
         return copia;
+    }
+
+    @Override
+    public int compareTo(Procesador o) {
+        return Integer.compare(this.getSumaTiempos(), o.getSumaTiempos());
     }
 }

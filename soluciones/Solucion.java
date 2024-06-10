@@ -1,16 +1,16 @@
-package TPEProg3;
+package TPEProg3.soluciones;
 
 import java.util.List;
 
-public class Solucion {
+import TPEProg3.Procesador;
+
+public abstract class Solucion {
     private List<Procesador> procesadores;
     private int tiempoMaximoEjecucion;
-    private int estadosGenerados;
 
-    public Solucion(List<Procesador> procesadores, int tiempoMaximoEjecucion, int estadosGenerados) {
+    public Solucion(List<Procesador> procesadores, int tiempoMaximoEjecucion) {
         this.procesadores = procesadores;
         this.tiempoMaximoEjecucion = tiempoMaximoEjecucion;
-        this.estadosGenerados = estadosGenerados;
     }
 
     public List<Procesador> getProcesadores() {
@@ -29,20 +29,10 @@ public class Solucion {
         this.tiempoMaximoEjecucion = tiempoMaximoEjecucion;
     }
 
-    public int getEstadosGenerados() {
-        return this.estadosGenerados;
-    }
-
-    public void setEstadosGenerados(int estadosGenerados) {
-        this.estadosGenerados = estadosGenerados;
-    }
-
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
 
         return "Procesadores con sus tareas asignadas : " + procesadores + " \n" +
-                " tiempo maximo de ejecucion : " + tiempoMaximoEjecucion + " \n" +
-                " cantidad de estados generados " + estadosGenerados;
+                " tiempo maximo de ejecucion : " + tiempoMaximoEjecucion + " \n";
     }
 }
