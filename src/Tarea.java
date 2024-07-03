@@ -1,4 +1,4 @@
-package TPEProg3.src;
+package src;
 
 public class Tarea implements Comparable<Tarea> {
     private String idTarea, nombreTarea;
@@ -67,7 +67,7 @@ public class Tarea implements Comparable<Tarea> {
     @Override
     public String toString() {
         // TODO Auto-generated method stub
-        return this.nombreTarea + " " + this.tiempoEjecucion;
+        return this.idTarea + " " + this.tiempoEjecucion;
     }
 
     @Override

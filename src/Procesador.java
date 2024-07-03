@@ -1,4 +1,4 @@
-package TPEProg3.src;
+package src;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,62 +30,31 @@ public class Procesador implements Comparable<Procesador> {
         return this.idProcesador;
     }
 
-    public boolean asignarTarea(Tarea t, int tiempo) {
-        this.sumaTiempoTareas += t.getTiempoEjecucion();
-
-        boolean sePuedeAsignar = false;
-
-        if (t.getEsCritica() && criticas == MAX_CRITICAS) {
-
-            System.out.println("Un procesador no puede tener mas de " + MAX_CRITICAS +
-                    " tareas criticas asignadas");
-        } else {
-            if (t.getEsCritica() && cumpleCriticas()) {
-                this.criticas++;
-            }
-            if ((cumpleCriticas() || !t.getEsCritica()) && estaRefrigerado) {
-                sePuedeAsignar = true;
-            } else if (cumpleCriticas() && !estaRefrigerado) {
-                if (cumple(tiempo)) {
-                    sePuedeAsignar = true;
-                } else {
-                    sumaTiempoTareas -= t.getTiempoEjecucion();
-
-                    System.out.println(
-                            "El procesador no puede ejecutar tareas las cuales sumadas superen " + tiempo
-                                    + " de tiempo sin estar refrigerado");
-                }
-            }
-
+    public boolean asignarTarea(Tarea tarea, int tiempo) {
+        if (tarea.getEsCritica() && criticas >= MAX_CRITICAS) {
+            return false;
+        }
+        if (!this.getEstaRefrigerado() && !cumple(tiempo, tarea)) {
+            return false;
         }
 
-        if (sePuedeAsignar) {
-            tareasAsignadas.add(t);
-            return true;
+        tareasAsignadas.add(tarea);
+        sumaTiempoTareas += tarea.getTiempoEjecucion();
+        if (tarea.getEsCritica()) {
+            criticas++;
         }
-        return false;
+        return true;
     }
 
-    private boolean cumpleCriticas() {
-        return criticas <= MAX_CRITICAS;
-    }
-
-    public int getSumaTiempos() {
-        int suma = 0;
-        for (Tarea t : tareasAsignadas) {
-            suma += t.getTiempoEjecucion();
-        }
-        return suma;
-    }
-
-    private boolean cumple(int tiempo) {
-        return tiempo > this.sumaTiempoTareas;
+    private boolean cumple(int tiempo, Tarea t) {
+        return tiempo >= t.getTiempoEjecucion() + this.sumaTiempoTareas;
 
     }
 
-    public void eliminarTarea(int t) {
-
-        if (tareasAsignadas.remove(t).getEsCritica()) {
+    public void eliminarTarea(Tarea t) {
+        tareasAsignadas.remove(t);
+        sumaTiempoTareas -= t.getTiempoEjecucion();
+        if (t.getEsCritica()) {
             criticas--;
         }
     }
@@ -157,6 +126,6 @@ public class Procesador implements Comparable<Procesador> {
 
     @Override
     public int compareTo(Procesador o) {
-        return Integer.compare(this.getSumaTiempos(), o.getSumaTiempos());
+        return Integer.compare(this.getSumaTiempoTareas(), o.getSumaTiempoTareas());
     }
 }

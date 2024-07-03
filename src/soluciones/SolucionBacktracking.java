@@ -2,7 +2,7 @@ package src.soluciones;
 
 import java.util.List;
 
-import TPEProg3.src.Procesador;
+import src.Procesador;
 
 public final class SolucionBacktracking extends Solucion {
     private int cantEstados;

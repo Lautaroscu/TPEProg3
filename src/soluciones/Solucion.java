@@ -1,7 +1,7 @@
 package src.soluciones;
 
 import java.util.List;
-import TPEProg3.src.Procesador;
+import src.Procesador;
 
 public abstract class Solucion {
     private List<Procesador> procesadores;

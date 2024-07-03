@@ -1,12 +1,17 @@
-package TPEProg3.src;
+package src;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import src.soluciones.Solucion;
 import src.soluciones.SolucionBacktracking;
 import src.soluciones.SolucionGreedy;
-import TPEProg3.src.utils.CSVReader;
+import src.utils.CSVReader;
+import src.Procesador;
+import src.Tarea;
 
 public class Servicios {
     private HashMap<String, Tarea> tareas = new HashMap<>();
@@ -17,7 +22,7 @@ public class Servicios {
 
     private List<Procesador> procesadores = new ArrayList<>();
     private List<Procesador> solucionFinalProcesadores = new ArrayList<>();
-    private ArrayList<Tarea> tareasList;
+    private ArrayList<Tarea> tareasList = new ArrayList<>();
 
     /**
      * NO modificar la interfaz de esta clase ni sus métodos públicos.
@@ -37,8 +42,7 @@ public class Servicios {
         CSVReader reader = new CSVReader();
 
         reader.readProcessors(pathProcesadores, procesadores);
-        reader.readTasks(pathTareas, tareas, tareasCriticas, tareasNoCriticas); // llena las estructuras
-        tareasList = new ArrayList<Tarea>(this.tareas.values());
+        reader.readTasks(pathTareas, tareas, tareasCriticas, tareasNoCriticas, tareasList); // llena las estructuras
 
     }
 
@@ -101,52 +105,34 @@ public class Servicios {
      */
 
     private int getTiempoMenorBacktracking(int tiempo) {
-        ArrayList<Tarea> verTareas = new ArrayList<>();
-
-        for (Procesador p : procesadores) {
-            buscarTiempoMenorBackTracking(p, tareasList.get(0), tareasList, 0, verTareas, tiempo);
-
-        }
-        return this.tiempoMenor;
+        back(0, tiempo);
+        return tiempoMenor;
 
     }
 
-    private void buscarTiempoMenorBackTracking(Procesador p, Tarea tarea, ArrayList<Tarea> tareas, int index,
-            ArrayList<Tarea> tareasAsignadas, int tiempo) {
-        if (!p.asignarTarea(tarea, tiempo)) {
-            return;
-        }
+    private void back(int index, int tiempo) {
         estados++;
-        tareasAsignadas.add(tarea);
 
-        if (getTiempoMayorProcesador() > this.tiempoMenor) {
-            tareasAsignadas.remove(tareasAsignadas.size() - 1);
-            p.eliminarTarea(p.getTareasAsignadas().size() - 1);
-
-            return;
-        }
-
-        if (index < tareas.size() - 1) {
-            Tarea t = tareas.get(index + 1);
-
-            for (Procesador pr : procesadores) {
-                buscarTiempoMenorBackTracking(pr, t, tareas, index + 1, tareasAsignadas, tiempo);
-            }
-        }
-
-        if (tareasAsignadas.size() == tareas.size())
-
-        {
-            if (this.tiempoMenor > getTiempoMayorProcesador()) {
-                this.tiempoMenor = getTiempoMayorProcesador();
-                this.solucionFinalProcesadores.clear();
+        if (index == tareasList.size()) {
+            if (getTiempoMayorProcesador() < tiempoMenor) {
+                tiempoMenor = getTiempoMayorProcesador();
                 guardarSolucion();
+            }
+            return;
+
+        }
+        Tarea t = tareasList.get(index);
+
+        for (Procesador p : procesadores) {
+
+            if (p.asignarTarea(t, tiempo)) {
+                if (getTiempoMayorProcesador() < tiempoMenor)
+                    back(index + 1, tiempo);
+                p.eliminarTarea(t);
 
             }
-        }
 
-        tareasAsignadas.remove(tareasAsignadas.size() - 1);
-        p.eliminarTarea(p.getTareasAsignadas().size() - 1);
+        }
 
     }
 
@@ -154,7 +140,7 @@ public class Servicios {
         int sumaMayor = 0;
 
         for (int i = 0; i < procesadores.size(); i++) {
-            int suma = procesadores.get(i).getSumaTiempos();
+            int suma = procesadores.get(i).getSumaTiempoTareas();
             if (suma > sumaMayor) {
                 sumaMayor = suma;
             }
@@ -211,7 +197,10 @@ public class Servicios {
     }
 
     private void guardarSolucion() {
+        solucionFinalProcesadores.clear();
+
         for (Procesador p : procesadores) {
+
             solucionFinalProcesadores.add(p.getCopia());
         }
     }

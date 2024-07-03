@@ -1,4 +1,4 @@
-package TPEProg3.src.utils;
+package src.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import TPEProg3.src.Tarea;
-import TPEProg3.src.Procesador;
+import src.Tarea;
+import src.Procesador;
 
 public class CSVReader {
 
@@ -18,7 +18,7 @@ public class CSVReader {
     }
 
     public void readTasks(String taskPath, HashMap<String, Tarea> tareas, ArrayList<Tarea> tareasCriticas,
-            ArrayList<Tarea> tareasNoCriticas) { // O(n) * 2
+            ArrayList<Tarea> tareasNoCriticas, ArrayList<Tarea> tareasList) { // O(n)
 
         // Obtengo una lista con las lineas del archivo
         // lines.get(0) tiene la primer linea del archivo
@@ -44,6 +44,8 @@ public class CSVReader {
                 tareasCriticas.add(nuevaTarea);
             else
                 tareasNoCriticas.add(nuevaTarea);
+
+            tareasList.add(nuevaTarea);
 
         }
 
